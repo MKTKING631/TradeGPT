@@ -1,112 +1,36 @@
-
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
-
-<!-- 🔹 HEAD (title + chart library + styles) -->
 <head>
-    <title>TradeGPT Pro</title>
-
-    <!-- Chart.js (for graph) -->
+    <title>TradeGPT</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <!-- CSS (design) -->
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial;
-            background: #0b0f1a;
-            color: white;
-        }
-
-        .header {
-            background: #111827;
-            padding: 15px;
-            text-align: center;
-            font-size: 22px;
-            color: #4da6ff;
-        }
-
-        .container {
-            padding: 20px;
-            text-align: center;
-        }
-
-        input {
-            padding: 10px;
-            width: 200px;
-            border-radius: 5px;
-            border: none;
-        }
-
-        button {
-            padding: 10px;
-            background: #4da6ff;
-            border: none;
-            color: white;
-            border-radius: 5px;
-        }
-
-        .card {
-            margin-top: 20px;
-            padding: 15px;
-            background: #111827;
-            border-radius: 10px;
-        }
-
-        canvas {
-            margin-top: 20px;
-        }
-
-        .buy { color: #00ff88; }
-        .sell { color: #ff4d4d; }
-    </style>
 </head>
 
-<!-- 🔹 BODY (UI + data display + JS) -->
-<body>
+<body style="background:black;color:white;text-align:center;">
 
-<!-- 🔸 Header -->
-<div class="header">🚀 TradeGPT Pro</div>
+<h1>📈 TradeGPT</h1>
 
-<!-- 🔸 Main Container -->
-<div class="container">
+<form method="POST">
+    <input name="stock" placeholder="Enter stock (AAPL)" required>
+    <button type="submit">Analyze</button>
+</form>
 
-    <!-- 🔸 Input Form -->
-    <form method="POST">
-        <input name="stock" placeholder="Enter stock (AAPL)" required>
-        <button type="submit">Analyze</button>
-    </form>
+<h2>{{ result }}</h2>
+<h3>{{ trend }}</h3>
+<h3>{{ signal }}</h3>
 
-    <!-- 🔸 Result Card -->
-    <div class="card">
-        <h2>{{ result }}</h2>
-        <h3>{{ trend }}</h3>
+<canvas id="chart"></canvas>
 
-        <h2 class="{% if signal == 'BUY 🟢' %}buy{% else %}sell{% endif %}">
-            {{ signal }}
-        </h2>
-    </div>
-
-    <!-- 🔸 Chart -->
-    <canvas id="chart"></canvas>
-
-</div>
-
-<!-- 🔥 JAVASCRIPT (MUST BE AT BOTTOM) -->
 <script>
-    let prices = {{ prices | tojson | safe }};
+    let prices = {{ prices | tojson if prices else [] }};
 
-    if (prices && prices.length > 0) {
+    if (prices.length > 0) {
         new Chart(document.getElementById("chart"), {
             type: 'line',
             data: {
                 labels: prices.map((_, i) => "Day " + (i+1)),
                 datasets: [{
                     label: "Stock Price",
-                    data: prices,
-                    borderColor: "#4da6ff",
-                    tension: 0.3,
-                    fill: false
+                    data: prices
                 }]
             }
         });
