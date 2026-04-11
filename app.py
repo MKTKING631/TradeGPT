@@ -14,16 +14,23 @@ def home():
 
         try:
             data = yf.Ticker(stock)
-            hist = data.history(period="7d")
+            import yfinance as yf
 
-            prices = list(hist["Close"])
+# inside your POST block
+hist = data.history(period="1mo")
 
-            if prices[-1] > prices[0]:
-                trend = "UPTREND 📈"
-                signal = "BUY 🟢"
-            else:
-                trend = "DOWNTREND 📉"
-                signal = "SELL 🔴"
+prices = list(hist["Close"])
+
+# Moving average logic
+short_avg = sum(prices[-5:]) / 5
+long_avg = sum(prices[-20:]) / 20
+
+if short_avg > long_avg:
+    trend = "UPTREND 📈"
+    signal = "BUY 🟢"
+else:
+    trend = "DOWNTREND 📉"
+    signal = "SELL 🔴"
 
             result = f"{stock} price: {round(prices[-1],2)}"
 
