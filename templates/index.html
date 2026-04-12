@@ -1,53 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TradeGPT Pro</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>TradeGPT Chat</title>
 
     <style>
         body {
-            margin: 0;
-            font-family: Arial;
             background: #0b0f1a;
             color: white;
-            display: flex;
+            font-family: Arial;
+            text-align: center;
         }
 
-        /* Sidebar */
-        .sidebar {
-            width: 200px;
-            background: #111827;
-            padding: 20px;
-            height: 100vh;
-        }
-
-        .sidebar h2 {
-            color: #4da6ff;
-        }
-
-        .sidebar a {
-            display: block;
-            color: white;
-            margin: 15px 0;
-            text-decoration: none;
-        }
-
-        /* Main */
-        .main {
-            flex: 1;
-            padding: 20px;
-        }
-
-        .topbar {
-            font-size: 24px;
-            margin-bottom: 20px;
+        #chatbox {
+            width: 90%;
+            max-width: 500px;
+            margin: auto;
+            height: 400px;
+            overflow-y: auto;
+            border: 1px solid gray;
+            padding: 10px;
         }
 
         input {
             padding: 10px;
-            width: 200px;
-            border-radius: 5px;
-            border: none;
+            width: 60%;
         }
 
         button {
@@ -55,79 +31,49 @@
             background: #4da6ff;
             border: none;
             color: white;
-            border-radius: 5px;
         }
 
-        .card {
-            margin-top: 20px;
-            padding: 15px;
-            background: #111827;
-            border-radius: 10px;
-        }
-
-        canvas {
-            margin-top: 20px;
-        }
-
-        .buy { color: #00ff88; }
-        .sell { color: #ff4d4d; }
+        .user { color: #4da6ff; }
+        .bot { color: #00ff88; }
     </style>
 </head>
 
 <body>
 
-<!-- Sidebar -->
-<div class="sidebar">
-    <h2>TradeGPT</h2>
-    <a href="#">Dashboard</a>
-    <a href="#">Portfolio</a>
-    <a href="#">Market</a>
-</div>
+<h1>🤖 TradeGPT Chat</h1>
 
-<!-- Main Content -->
-<div class="main">
+<div id="chatbox"></div>
 
-    <div class="topbar">📊 Trading Dashboard</div>
+<br>
 
-    <form method="POST">
-        <input name="stock" placeholder="Enter stock (AAPL)" required>
-        <button type="submit">Analyze</button>
-    </form>
-
-    <div class="card">
-        <h2>{{ result }}</h2>
-        <h3>{{ trend }}</h3>
-
-        <h2 class="{% if signal == 'BUY 🟢' %}buy{% else %}sell{% endif %}">
-            {{ signal }}
-        </h2>
-
-        <p>RSI: {{ rsi }}</p>
-        <p>MA Signal: {{ ma_signal }}</p>
-    </div>
-
-    <canvas id="chart"></canvas>
-
-</div>
+<input id="msg" placeholder="Enter stock (AAPL)">
+<button onclick="sendMsg()">Send</button>
 
 <script>
-    let prices = {{ prices | tojson }};
+async function sendMsg() {
+    let input = document.getElementById("msg");
+    let message = input.value;
 
-    if (prices.length > 0) {
-        new Chart(document.getElementById("chart"), {
-            type: 'line',
-            data: {
-                labels: prices.map((_, i) => "Day " + (i+1)),
-                datasets: [{
-                    label: "Stock Price",
-                    data: prices,
-                    borderColor: "#4da6ff",
-                    tension: 0.3
-                }]
-            }
-        });
-    }
+    if (!message) return;
+
+    let chatbox = document.getElementById("chatbox");
+
+    chatbox.innerHTML += `<p class="user">You: ${message}</p>`;
+
+    input.value = "";
+
+    let res = await fetch("/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message: message})
+    });
+
+    let data = await res.json();
+
+    chatbox.innerHTML += `<p class="bot">TradeGPT: ${data.reply}</p>`;
+    chatbox.scrollTop = chatbox.scrollHeight;
+}
 </script>
 
 </body>
-</html>
+    </
