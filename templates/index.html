@@ -21,7 +21,7 @@
 <canvas id="chart"></canvas>
 
 <script>
-    let prices = {{ prices | tojson if prices else [] }};
+    let prices = {{ prices | tojson }};
 
     if (prices.length > 0) {
         new Chart(document.getElementById("chart"), {
