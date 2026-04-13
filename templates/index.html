@@ -75,24 +75,30 @@
 
             let messages = document.getElementById("messages");
 
-            // User message
+            // Show user message
             messages.innerHTML += `<p class="user"><b>You:</b> ${message}</p>`;
 
-            let response = await fetch("/chat", {
-                method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({message: message})
-            });
+            try {
+                let response = await fetch("/chat", {
+                    method: "POST",
+                    headers: {"Content-Type": "application/json"},
+                    body: JSON.stringify({message: message})
+                });
 
-            let data = await response.json();
+                let data = await response.json();
 
-            // Bot reply
-            messages.innerHTML += `<p class="bot"><b>TradeGPT:</b> ${data.reply}</p>`;
+                // Show bot reply
+                messages.innerHTML += `<p class="bot"><b>TradeGPT:</b> ${data.reply}</p>`;
 
-            messages.scrollTop = messages.scrollHeight;
+                messages.scrollTop = messages.scrollHeight;
+
+            } catch (error) {
+                messages.innerHTML += `<p class="bot">⚠️ Server error</p>`;
+            }
+
             input.value = "";
         }
     </script>
 
-</body>
-</html>
+</bodyPE>
+<h
