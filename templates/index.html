@@ -1,79 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TradeGPT Chat</title>
+    <title>TradeGPT</title>
 
     <style>
         body {
-            background: #0b0f1a;
-            color: white;
             font-family: Arial;
+            background: #0f172a;
+            color: white;
             text-align: center;
         }
 
+        h1 {
+            color: #38bdf8;
+        }
+
         #chatbox {
-            width: 90%;
-            max-width: 500px;
+            width: 400px;
             margin: auto;
-            height: 400px;
-            overflow-y: auto;
-            border: 1px solid gray;
+            border: 1px solid #334155;
             padding: 10px;
+            border-radius: 10px;
+            background: #1e293b;
+        }
+
+        #messages {
+            height: 300px;
+            overflow-y: auto;
+            text-align: left;
+            padding: 5px;
+        }
+
+        .user {
+            color: #22c55e;
+        }
+
+        .bot {
+            color: #facc15;
         }
 
         input {
-            padding: 10px;
-            width: 60%;
+            width: 70%;
+            padding: 8px;
+            border-radius: 5px;
+            border: none;
         }
 
         button {
-            padding: 10px;
-            background: #4da6ff;
+            padding: 8px 12px;
             border: none;
-            color: white;
+            background: #38bdf8;
+            color: black;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-        .user { color: #4da6ff; }
-        .bot { color: #00ff88; }
+        button:hover {
+            background: #0ea5e9;
+        }
     </style>
 </head>
 
 <body>
 
-<h1>🤖 TradeGPT Chat</h1>
+    <h1>📈 TradeGPT</h1>
 
-<div id="chatbox"></div>
+    <div id="chatbox">
+        <div id="messages"></div>
 
-<br>
+        <input type="text" id="userInput" placeholder="Enter stock (AAPL, TSLA)">
+        <button onclick="sendMessage()">Send</button>
+    </div>
 
-<input id="msg" placeholder="Enter stock (AAPL)">
-<button onclick="sendMsg()">Send</button>
+    <script>
+        async function sendMessage() {
+            let input = document.getElementById("userInput");
+            let message = input.value.trim();
 
-<script>
-async function sendMsg() {
-    let input = document.getElementById("msg");
-    let message = input.value;
+            if (message === "") return;
 
-    if (!message) return;
+            let messages = document.getElementById("messages");
 
-    let chatbox = document.getElementById("chatbox");
+            // User message
+            messages.innerHTML += `<p class="user"><b>You:</b> ${message}</p>`;
 
-    chatbox.innerHTML += `<p class="user">You: ${message}</p>`;
+            // Send request
+            let response = await fetch("/chat", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({message: message})
+            });
 
-    input.value = "";
+            let data = await response.json();
 
-    let res = await fetch("/chat", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({message: message})
-    });
+            // Bot reply
+            messages.innerHTML += `<p class="bot"><b>TradeGPT:</b> ${data.reply}</p>`;
 
-    let data = await res.json();
+            // Scroll down
+            messages.scrollTop = messages.scrollHeight;
 
-    chatbox.innerHTML += `<p class="bot">TradeGPT: ${data.reply}</p>`;
-    chatbox.scrollTop = chatbox.scrollHeight;
-}
-</script>
+            input.value = "";
+        }
+    </script>
 
 </body>
-    </
+</html>
