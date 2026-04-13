@@ -28,7 +28,6 @@
             height: 300px;
             overflow-y: auto;
             text-align: left;
-            padding: 5px;
         }
 
         .user {
@@ -47,16 +46,11 @@
         }
 
         button {
-            padding: 8px 12px;
+            padding: 8px;
             border: none;
             background: #38bdf8;
-            color: black;
             border-radius: 5px;
             cursor: pointer;
-        }
-
-        button:hover {
-            background: #0ea5e9;
         }
     </style>
 </head>
@@ -68,7 +62,7 @@
     <div id="chatbox">
         <div id="messages"></div>
 
-        <input type="text" id="userInput" placeholder="Enter stock (AAPL, TSLA)">
+        <input type="text" id="userInput" placeholder="Enter stock (AAPL)">
         <button onclick="sendMessage()">Send</button>
     </div>
 
@@ -84,7 +78,6 @@
             // User message
             messages.innerHTML += `<p class="user"><b>You:</b> ${message}</p>`;
 
-            // Send request
             let response = await fetch("/chat", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
@@ -96,9 +89,7 @@
             // Bot reply
             messages.innerHTML += `<p class="bot"><b>TradeGPT:</b> ${data.reply}</p>`;
 
-            // Scroll down
             messages.scrollTop = messages.scrollHeight;
-
             input.value = "";
         }
     </script>
